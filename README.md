@@ -9,7 +9,7 @@ client.GetItem(ItemID="321021906488")
 
 Most of the Python libs for using eBay APIs I found are based on the _Plain XML_ API. Which basically means the author of the lib has to handcode request-builder functions for every method they intend to support.
 
-eBay have over _a hundred and fifty methods_ accessible via their APIs, each with some required and dozens of optional args. This basically means all the Python eBay libs are very incomplete and probably out of date too, because it's such a pain to maintain them.
+eBay have over _a hundred and fifty_ methods accessible via their APIs, each with some required and dozens of optional args. This basically means all the Python eBay libs are very incomplete and probably out of date too, because it's such a pain to maintain them.
 
 SOAP
 ----
