@@ -1,5 +1,4 @@
-ebaysuds
-========
+# ebaysuds
 
 Most of the Python libs for using eBay APIs I found are based on the _Plain XML_ API. Which basically means the author of the lib has to handcode request-builder functions for every method they intend to support.
 
@@ -11,7 +10,7 @@ eBay provide a _SOAP API_ too. The SOAP API is basically just the XML API with s
 Python already has an excellent SOAP lib in the form of [Suds](https://fedorahosted.org/suds/). So it seems like a better approach would be to use eBay's SOAP API via Suds...
 
 ### Dirty…
-…eBay's implementation of SOAP/WSDL seems to be a bit idiosyncratic (possibly… _wrong_) or at least it's not as smooth to call methods via Suds as it could be. 
+…eBay's implementation of SOAP/WSDL seems to be a bit idiosyncratic (possibly… _wrong_) - at least it's not as smooth to call methods via Suds as it could be. 
 
 ### Clean Again…
 So I made this thin wrapper around Suds, so that you can easily use *all* of the eBay API methods, in up-to-the-minute form, from Python.
@@ -24,3 +23,10 @@ client.GetItem(ItemID="321021906488")
 
 You can see the source code itself is fairly trivial, but it took me a couple of days wrestling with eBay's extensive-but-crap docs to get to this point.
 
+## Getting started
+
+1. First you need to get yourself some developer keys [from eBay here](https://developer.ebay.com/DevZone/account/)
+2. You need to make a `ebaysuds.conf` file in the root of your project (or `export EBAYSUDS_CONFIG_PATH=<path>` in your shell)
+3. Easiest way is to copy `ebaysuds.conf-example` from this repo and fill in the blanks. `site_id` is the [code of the eBay site](http://developer.ebay.com/DevZone/XML/docs/WebHelp/FieldDifferences-Site_IDs.html) your profile is on.
+
+That's it. Well, you need to [read the docs](http://developer.ebay.com/DevZone/XML/docs/WebHelp/wwhelp/wwhimpl/js/html/wwhelp.htm?href=Overview-.html) from eBay to see how to make the calls you want.
