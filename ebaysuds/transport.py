@@ -1,3 +1,14 @@
+"""
+From:
+https://gist.github.com/3721801
+
+Author:
+https://github.com/rbarrois
+
+Not strictly necessary but makes it a lot easier to debug the requests
+and responses if you can use a proxy to inspect them
+(eg http://charlesproxy.com)
+"""
 from suds.transport.http import HttpTransport as SudsHttpTransport 
 
 
