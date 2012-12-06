@@ -26,7 +26,7 @@ You can see the source code itself is fairly trivial, but it took me a couple of
 ## Getting started
 
 1. First you need to get yourself some developer keys [from eBay here](https://developer.ebay.com/DevZone/account/)
-2. You need to make a `ebaysuds.conf` file in the root of your project (or `export EBAYSUDS_CONFIG_PATH=<path>` in your shell)
+2. You need to make a `ebaysuds.conf` file in the root of your project (or `export EBAYSUDS_CONFIG_PATH=<path to conf>` in your shell)
 3. Easiest way is to copy `ebaysuds.conf-example` from this repo and fill in the blanks. `site_id` is the [code of the eBay site](http://developer.ebay.com/DevZone/XML/docs/WebHelp/FieldDifferences-Site_IDs.html) your profile is on.
 
 That's it. Well, you need to [read the docs](http://developer.ebay.com/DevZone/XML/docs/WebHelp/wwhelp/wwhimpl/js/html/wwhelp.htm?href=Overview-.html) from eBay to see how to make the calls you want.
