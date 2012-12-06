@@ -1,0 +1,10 @@
+[keys]
+dev_id=XXXXX
+app_id=XXXXX
+cert_id=XXXXX
+
+[site]
+site_id=0
+
+[auth]
+token = XXXXX
