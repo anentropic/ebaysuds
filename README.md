@@ -30,3 +30,23 @@ You can see the source code itself is fairly trivial, but it took me a couple of
 3. Easiest way is to copy `ebaysuds.conf-example` from this repo and fill in the blanks. `site_id` is the [code of the eBay site](http://developer.ebay.com/DevZone/XML/docs/WebHelp/FieldDifferences-Site_IDs.html) your profile is on.
 
 That's it. Well, you need to [read the docs](http://developer.ebay.com/DevZone/XML/docs/WebHelp/wwhelp/wwhimpl/js/html/wwhelp.htm?href=Overview-.html) from eBay to see how to make the calls you want.
+
+### A spot of pruning
+
+So yeah, you probably noticed it's really slow to initialise that client the first time?
+
+Behind the scenes we're _downloading a 5.3MB XML file and parsing it into Python objects_.
+
+Hmm, SOAP doesn't seem so hot now? Well it's mitigated partly by telling Suds to cache the WSDL (and parsed Python objects).
+
+But eBay also recognise the problem and provide:
+
+> [WSDL Pruner Tool](http://developer.ebay.com/DevZone/codebase/wsdlpruner/pruner.zip): Lets you prune a bulky WSDL down to the operations that you want to use
+
+Go ahead, download it. Yes it's a lovely Java jar file.
+
+It comes with some rudimentary docs explaining how to launch the thing, which is a simple GUI app allowing you to save a new WSDL with just the methods you want to use.
+
+A single-method WSDL (the ones I tried) still comes out about 1.6MB(!) but a lot of that is documentation text and XML overhead, so probably a lot less Python objects than if you have all 160 methods.
+
+You need to host the WSDL on a web server 
