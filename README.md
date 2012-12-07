@@ -43,10 +43,8 @@ But eBay also recognise the problem and provide:
 
 > [WSDL Pruner Tool](http://developer.ebay.com/DevZone/codebase/wsdlpruner/pruner.zip): Lets you prune a bulky WSDL down to the operations that you want to use
 
-Go ahead, download it. Yes it's a lovely Java jar file.
-
-It comes with some rudimentary docs explaining how to launch the thing, which is a simple GUI app allowing you to save a new WSDL with just the methods you want to use.
+Go ahead, download it. Yes it's a lovely Java jar file. It comes with some rudimentary docs explaining how to launch the thing, which is a simple GUI app allowing you to save a new WSDL with just the methods you want to use.
 
 A single-method WSDL (the ones I tried) still comes out about 1.6MB(!) but a lot of that is documentation text and XML overhead, so probably a lot less Python objects than if you have all 160 methods.
 
-You need to host the WSDL on a web server 
+Suds expects a URL for the WSDL, but it can be a file one, eg: `client = EbaySuds("file:///home/me/project/pruned.wsdl")`
