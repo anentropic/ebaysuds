@@ -35,9 +35,7 @@ That's it. Well, you need to [read the docs](http://developer.ebay.com/DevZone/X
 
 So yeah, you probably noticed it's really slow to initialise that client the first time?
 
-Behind the scenes we're _downloading a 5.3MB XML file and parsing it into Python objects_.
-
-Hmm, SOAP doesn't seem so hot now? Well it's mitigated partly by telling Suds to cache the WSDL (and parsed Python objects).
+Behind the scenes we're _downloading a 5.3MB XML file and parsing it into Python objects_. Hmm, SOAP doesn't seem so hot now? Well it's mitigated partly by telling Suds to cache the WSDL (and parsed Python objects).
 
 But eBay also recognise the problem and provide:
 
