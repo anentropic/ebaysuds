@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='EbaySuds',
-    version='0.2.4',
+    version='0.2.5',
     packages=['ebaysuds',],
     license='LGPL v3',
     long_description=open('pypi.rst').read(),
