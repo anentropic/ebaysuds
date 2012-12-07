@@ -15,6 +15,8 @@ Python already has an excellent SOAP lib in the form of [Suds](https://fedorahos
 ### Clean Again…
 So I made this thin wrapper around Suds, so that you can easily use *all* of the eBay API methods, in up-to-the-minute form, from Python.
 
+`pip install EbaySuds`
+
 ```python
 from ebaysuds.service import EbaySuds
 client = EbaySuds()
@@ -46,3 +48,11 @@ Go ahead, download it. Yes it's a lovely Java jar file. It comes with some rudim
 A single-method WSDL (the ones I tried) still comes out about 1.6MB(!) but a lot of that is documentation text and XML overhead, so probably a lot less Python objects than if you have all 160 methods.
 
 Suds expects a URL for the WSDL, but it can be a file one, eg: `client = EbaySuds("file:///home/me/project/pruned.wsdl")`
+
+If you fancy pruning WSDLs programmatically there's a handy easter egg in the pruner.jar ...an actual command line script! To use it:
+
+```
+$ cd <path_to_pruner>
+$ wget http://developer.ebay.com/webservices/latest/ebaySvc.wsdl
+$ java -classpath pruner.jar com.ebay.ecsp.tools.PrunerUtil -wsdl ebaySvc.wsdl -out pruned.wsdl -oplist GetItem,SetNotificationPreferences,etc
+```
