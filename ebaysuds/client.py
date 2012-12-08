@@ -13,20 +13,20 @@ GATEWAY_URI_QUERYSTRING = "?callname=%(call_name)s&siteid=%(site_id)s&appid=%(ap
 
 class EbaySuds(object):
     def __init__(self, wsdl_url=WSDL_URL):
-        self.client = Client(wsdl_url, cachingpolicy=1, transport=WellBehavedHttpTransport())
+        self.sudsclient = Client(wsdl_url, cachingpolicy=1, transport=WellBehavedHttpTransport())
         self.site_id = ebaysuds_config.get('site', 'site_id')
         self.app_id = ebaysuds_config.get('keys', 'app_id')
 
         # do the authentication ritual
-        credentials = self.client.factory.create('RequesterCredentials')
+        credentials = self.sudsclient.factory.create('RequesterCredentials')
         credentials.eBayAuthToken = ebaysuds_config.get('auth', 'token')
         credentials.Credentials.AppId = self.app_id
         credentials.Credentials.DevId = ebaysuds_config.get('keys', 'dev_id')
         credentials.Credentials.AuthCert = ebaysuds_config.get('keys', 'cert_id')
-        self.client.set_options(soapheaders=credentials)
+        self.sudsclient.set_options(soapheaders=credentials)
         
         # find current API version from the WSDL
-        service = self.client.sd[0].service
+        service = self.sudsclient.sd[0].service
         self.version = service.root.getChild('documentation').getChild('Version').text
         
         # add querystring to the service URI specified in WSDL
@@ -37,7 +37,7 @@ class EbaySuds(object):
         A wrapper over the the suds service method invocation to do the extra stuff
         required by ebay's weird implementation of SOAP
         """
-        method = getattr(self.client.service, name)
+        method = getattr(self.sudsclient.service, name)
 
         # for some reason ebay require some fields from the SOAP request to be repeated
         # as querystring args appended to the service url
