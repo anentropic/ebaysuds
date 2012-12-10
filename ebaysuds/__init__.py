@@ -1,3 +1,2 @@
-from .client import EbaySuds
-
-__all__ = [EbaySuds,]
+from .client import EbaySuds, WSDL_URL
+from .config import ebaysuds_config
