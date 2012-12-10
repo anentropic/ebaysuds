@@ -1,3 +1,7 @@
+[wsdl]
+# optional:
+# url=XXXXX
+
 [keys]
 dev_id=XXXXX
 app_id=XXXXX
