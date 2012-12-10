@@ -1,4 +1,4 @@
-from ConfigParser import NoOptionError
+from ConfigParser import NoOptionError, NoSectionError
 from functools import partial
 
 from suds.client import Client
@@ -10,7 +10,7 @@ from .transport import WellBehavedHttpTransport
 
 try:
     WSDL_URL = ebaysuds_config.get('wsdl', 'url')
-except NoOptionError:
+except (NoOptionError, NoSectionError):
     WSDL_URL = "http://developer.ebay.com/webservices/latest/ebaySvc.wsdl"
 GATEWAY_URI_QUERYSTRING = "?callname=%(call_name)s&siteid=%(site_id)s&appid=%(app_id)s&version=%(version)s&routing=default"
 
