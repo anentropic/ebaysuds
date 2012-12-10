@@ -18,7 +18,7 @@ So I made this thin wrapper around Suds, so that you can easily use *all* of the
 `pip install EbaySuds`
 
 ```python
-from ebaysuds.service import EbaySuds
+from ebaysuds import EbaySuds
 client = EbaySuds()
 client.GetItem(ItemID="321021906488")
 ```
