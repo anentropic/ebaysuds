@@ -9,7 +9,7 @@ from .transport import WellBehavedHttpTransport
 
 
 try:
-    WSDL_URL = ebaysuds_config.has_option('wsdl', 'url')
+    WSDL_URL = ebaysuds_config.get('wsdl', 'url')
 except NoOptionError:
     WSDL_URL = "http://developer.ebay.com/webservices/latest/ebaySvc.wsdl"
 GATEWAY_URI_QUERYSTRING = "?callname=%(call_name)s&siteid=%(site_id)s&appid=%(app_id)s&version=%(version)s&routing=default"
