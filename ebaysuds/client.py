@@ -9,9 +9,13 @@ from .transport import WellBehavedHttpTransport
 
 
 try:
-    WSDL_URL = ebaysuds_config.get('wsdl', 'url')
+    WSDL_URL = ebaysuds_config.get('soap', 'wsdl_url')
 except (NoOptionError, NoSectionError):
     WSDL_URL = "http://developer.ebay.com/webservices/latest/ebaySvc.wsdl"
+try:
+    API_URL = ebaysuds_config.get('soap', 'api_endpoint')
+except (NoOptionError, NoSectionError):
+    API_URL = "https://api.ebay.com/wsapi"
 GATEWAY_URI_QUERYSTRING = "?callname=%(call_name)s&siteid=%(site_id)s&appid=%(app_id)s&version=%(version)s&routing=default"
 
 
@@ -34,7 +38,8 @@ class EbaySuds(object):
         self.version = service.root.getChild('documentation').getChild('Version').text
         
         # add querystring to the service URI specified in WSDL
-        self.uri_template = service.ports[0].location + GATEWAY_URI_QUERYSTRING
+        # (the service URI can be found in service.ports[0].location but there's no sandbox endpoint in the wsdl)
+        self.uri_template = API_URL + GATEWAY_URI_QUERYSTRING
 
     def __getattr__(self, name):
         """

@@ -1,6 +1,7 @@
-[wsdl]
+[soap]
 # optional:
-# url=XXXXX
+# wsdl_url=XXXXX
+# api_endpoint=https://api.sandbox.ebay.com/wsapi
 
 [keys]
 dev_id=XXXXX
