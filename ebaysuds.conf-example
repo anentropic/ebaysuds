@@ -5,6 +5,10 @@
 
 [keys]
 dev_id=XXXXX
+[sandbox_keys]
+app_id=XXXXX
+cert_id=XXXXX
+[production_keys]
 app_id=XXXXX
 cert_id=XXXXX
 
