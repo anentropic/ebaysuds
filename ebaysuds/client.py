@@ -19,6 +19,8 @@ GATEWAY_URI_QUERYSTRING = "?callname=%(call_name)s&siteid=%(site_id)s&appid=%(ap
 class EbaySuds(object):
     def __init__(self, wsdl_url=WSDL_URL, sandbox=False, **kwargs):
         self.sudsclient = Client(wsdl_url, cachingpolicy=1, transport=WellBehavedHttpTransport())
+        self.sandbox = sandbox
+        # eBay API methods are all CapsCase so regular python attrs above shouldn't ever clash
 
         try:
             endpoint = ebaysuds_config.get('soap', 'api_endpoint')
