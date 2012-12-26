@@ -1,11 +1,16 @@
+import logging
 from ConfigParser import NoOptionError, NoSectionError
 from functools import partial
 
 from suds.client import Client
 from suds.plugin import DocumentPlugin
 
-from .config import ebaysuds_config
+from .config import ebaysuds_config, CONFIG_PATH
 from .transport import WellBehavedHttpTransport
+
+
+logging.basicConfig()
+log = logging.getLogger(__name__)
 
 
 try:
@@ -34,6 +39,7 @@ class EbaySuds(object):
         else:
             key_section = 'production_keys'
 
+        log.info('CONFIG_PATH: %s', CONFIG_PATH)
         self.site_id = kwargs.get('site_id') or ebaysuds_config.get('site', 'site_id')
         self.app_id = kwargs.get('app_id') or ebaysuds_config.get(key_section, 'app_id')
 
