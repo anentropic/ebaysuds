@@ -45,9 +45,9 @@ class EbaySuds(object):
 
         # do the authentication ritual
         credentials = self.sudsclient.factory.create('RequesterCredentials')
-        try:
+        if 'token' in kwargs:
             credentials.eBayAuthToken = kwargs['token']
-        except KeyError:
+        else:
             credentials.eBayAuthToken = ebaysuds_config.get('auth', 'token')
         credentials.Credentials.AppId = self.app_id
         credentials.Credentials.DevId = kwargs.get('dev_id') or ebaysuds_config.get('keys', 'dev_id')
