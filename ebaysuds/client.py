@@ -45,16 +45,19 @@ class EbaySuds(object):
 
         # do the authentication ritual
         credentials = self.sudsclient.factory.create('RequesterCredentials')
-        credentials.eBayAuthToken = kwargs.get('token') or ebaysuds_config.get('auth', 'token')
+        if 'token' in kwargs:
+            credentials.eBayAuthToken = kwargs['token']
+        else:
+            credentials.eBayAuthToken = ebaysuds_config.get('auth', 'token')
         credentials.Credentials.AppId = self.app_id
         credentials.Credentials.DevId = kwargs.get('dev_id') or ebaysuds_config.get('keys', 'dev_id')
         credentials.Credentials.AuthCert = kwargs.get('cert_id') or ebaysuds_config.get(key_section, 'cert_id')
         self.sudsclient.set_options(soapheaders=credentials)
-        
+
         # find current API version from the WSDL
         service = self.sudsclient.sd[0].service
         self.version = service.root.getChild('documentation').getChild('Version').text
-        
+
         # add querystring to the service URI specified in WSDL
         # (the service URI can be found in service.ports[0].location but there's no sandbox endpoint in the wsdl)
         self.uri_template = endpoint + GATEWAY_URI_QUERYSTRING
@@ -74,6 +77,6 @@ class EbaySuds(object):
             'app_id': self.app_id,
             'version': self.version,
         }
-        
+
         # ...and the method call itself always has to specify an API version (again)
         return partial(method, Version=self.version)
