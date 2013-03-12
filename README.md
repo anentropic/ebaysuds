@@ -18,8 +18,8 @@ So I made this thin wrapper around Suds, so that you can easily use *all* of the
 `pip install EbaySuds`
 
 ```python
-from ebaysuds import EbaySuds
-client = EbaySuds()
+from ebaysuds import TradingAPI
+client = TradingAPI()
 client.GetItem(ItemID="321021906488")
 ```
 
@@ -47,7 +47,7 @@ Go ahead, download it. Yes it's a lovely Java jar file. It comes with some rudim
 
 A single-method WSDL (the ones I tried) still comes out about 1.6MB(!) but a lot of that is documentation text and XML overhead, so probably a lot less Python objects than if you have all 160 methods.
 
-Suds expects a URL for the WSDL, but it can be a file one, eg: `client = EbaySuds("file:///home/me/project/pruned.wsdl")`
+Suds expects a URL for the WSDL, but it can be a file one, eg: `client = TradingAPI("file:///home/me/project/pruned.wsdl")`
 
 If you fancy pruning WSDLs programmatically there's a handy easter egg in the pruner.jar ...an actual command line script! To use it:
 

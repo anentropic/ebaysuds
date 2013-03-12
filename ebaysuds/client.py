@@ -21,7 +21,7 @@ except (NoOptionError, NoSectionError):
 GATEWAY_URI_QUERYSTRING = "?callname=%(call_name)s&siteid=%(site_id)s&appid=%(app_id)s&version=%(version)s&routing=default"
 
 
-class EbaySuds(object):
+class TradingAPI(object):
     def __init__(self, wsdl_url=WSDL_URL, sandbox=False, **kwargs):
         self.sudsclient = Client(wsdl_url, cachingpolicy=1, transport=WellBehavedHttpTransport())
         self.sandbox = sandbox
