@@ -147,7 +147,7 @@ class ShoppingAPI(APIBase):
     SANDBOX_ENDPOINT = 'http://open.api.sandbox.ebay.com/shopping'
 
     def __getattr__(self, name):
-        method = super(TradingAPI, self).__getattr__(name=name)
+        method = super(ShoppingAPI, self).__getattr__(name=name)
 
         # for some reason ebay require some fields from the SOAP request to be repeated
         # as querystring args appended to the service url
@@ -172,7 +172,7 @@ class FindingAPI(APIBase):
         return 
 
     def __getattr__(self, name):
-        method = super(TradingAPI, self).__getattr__(name=name)
+        method = super(FindingAPI, self).__getattr__(name=name)
 
         http_headers = {
             'X-EBAY-SOA-OPERATION-NAME': name,
