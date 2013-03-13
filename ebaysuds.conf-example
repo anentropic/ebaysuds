@@ -1,7 +1,10 @@
 [soap]
 # optional:
-# wsdl_url=XXXXX
-# api_endpoint=https://api.sandbox.ebay.com/wsapi
+# trading_wsdl=XXXXX
+# shopping_wsdl=XXXXX
+# trading_api=https://api.sandbox.ebay.com/wsapi
+# shopping_api=http://open.api.ebay.com/shopping
+# etc
 
 [keys]
 dev_id=XXXXX

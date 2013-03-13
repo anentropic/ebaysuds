@@ -1,2 +1,2 @@
-from .client import EbaySuds, WSDL_URL
+from .client import TradingAPI, ShoppingAPI, FindingAPI
 from .config import ebaysuds_config
