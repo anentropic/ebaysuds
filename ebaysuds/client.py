@@ -71,16 +71,16 @@ class APIBase(object):
             else:
                 self._endpoint = self.PRODUCTION_ENDPOINT# defined on sub-class
         if sandbox:
-            key_section = 'sandbox_keys'
+            self._key_section = 'sandbox_keys'
         else:
-            key_section = 'production_keys'
+            self._key_section = 'production_keys'
 
         self.sudsclient = Client(self.WSDL, cachingpolicy=1, transport=WellBehavedHttpTransport())
         self.sandbox = sandbox
 
         log.info('CONFIG_PATH: %s', CONFIG_PATH)
         self.site_id = kwargs.get('site_id') or ebaysuds_config.get('site', 'site_id')
-        self.app_id = kwargs.get('app_id') or ebaysuds_config.get(key_section, 'app_id')
+        self.app_id = kwargs.get('app_id') or ebaysuds_config.get(self._key_section, 'app_id')
 
         # find current API version from the WSDL
         service = self.sudsclient.sd[0].service
@@ -119,7 +119,7 @@ class TradingAPI(APIBase):
             credentials.eBayAuthToken = ebaysuds_config.get('auth', 'token')
         credentials.Credentials.AppId = self.app_id
         credentials.Credentials.DevId = kwargs.get('dev_id') or ebaysuds_config.get('keys', 'dev_id')
-        credentials.Credentials.AuthCert = kwargs.get('cert_id') or ebaysuds_config.get(key_section, 'cert_id')
+        credentials.Credentials.AuthCert = kwargs.get('cert_id') or ebaysuds_config.get(self._key_section, 'cert_id')
         self.sudsclient.set_options(soapheaders=credentials)
     
     def __getattr__(self, name):
