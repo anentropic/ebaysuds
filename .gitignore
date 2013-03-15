@@ -37,3 +37,5 @@ nosetests.xml
 MANIFEST
 .venv
 .DS_Store
+
+ebaysuds.conf

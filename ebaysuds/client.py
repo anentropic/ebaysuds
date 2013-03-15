@@ -12,7 +12,8 @@ from .transport import WellBehavedHttpTransport
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-# I wish I didn't have to do this
+# I wish I didn't have to do this,, see:
+# http://developer.ebay.com/DevZone/merchandising/docs/Concepts/SiteIDToGlobalID.html
 SITE_ID_TO_GLOBAL_ID = {
     0: 'EBAY-US',
     2: 'EBAY-ENCA',
@@ -47,6 +48,9 @@ class APIBase(object):
     """
     WSDL = None
 
+    PRODUCTION_ENDPOINT = None
+    SANDBOX_ENDPOINT = None
+
     def _get_conf_prefix(self):
         # assume the class name ends in 'API'
         return self.__class__.__name__[:-3].lower()
@@ -61,22 +65,33 @@ class APIBase(object):
             self.WSDL = ebaysuds_config.get('soap', '%s_wsdl' % self.CONF_PREFIX)
         except (NoOptionError, NoSectionError):
             if self.WSDL is None:
-                raise NotImplementedError('You must give a value for WSDL on a sub-class')
+                raise NotImplementedError(
+                    'You must give a value for WSDL on a sub-class, or define'\
+                    ' <api name>_wsdl in the conf file'
+                )
 
         try:
             self._endpoint = ebaysuds_config.get('soap', '%s_api' % self.CONF_PREFIX)
         except (NoOptionError, NoSectionError):
             if sandbox:
-                self._endpoint = self.SANDBOX_ENDPOINT# defined on sub-class
+                if self.SANDBOX_ENDPOINT is None:
+                    raise NotImplementedError(
+                        'You must give a value for SANDBOX_ENDPOINT on a sub-'\
+                        'class, or define <api name>_api in the conf file'
+                    )
+                self._endpoint = self.SANDBOX_ENDPOINT
             else:
-                self._endpoint = self.PRODUCTION_ENDPOINT# defined on sub-class
-        if sandbox:
-            self._key_section = 'sandbox_keys'
-        else:
-            self._key_section = 'production_keys'
+                if self.SANDBOX_ENDPOINT is None:
+                    raise NotImplementedError(
+                        'You must give a value for PRODUCTION_ENDPOINT on a '\
+                        'sub-class, or define <api name>_api in the conf file'
+                    )
+                self._endpoint = self.PRODUCTION_ENDPOINT
 
         self.sudsclient = Client(self.WSDL, cachingpolicy=1, transport=WellBehavedHttpTransport())
         self.sandbox = sandbox
+
+        self._key_section = 'sandbox_keys' if sandbox else 'production_keys'
 
         log.info('CONFIG_PATH: %s', CONFIG_PATH)
         self.site_id = kwargs.get('site_id') or ebaysuds_config.get('site', 'site_id')
@@ -111,15 +126,14 @@ class TradingAPI(APIBase):
             self.WSDL = wsdl_url
         super(TradingAPI, self).__init__(sandbox=sandbox, **kwargs)
 
+        token_key = '%stoken' % ('sandbox_' if sandbox else '')
+
         # do the authentication ritual
         credentials = self.sudsclient.factory.create('RequesterCredentials')
-        if 'token' in kwargs:
-            credentials.eBayAuthToken = kwargs['token']
-        else:
-            credentials.eBayAuthToken = ebaysuds_config.get('auth', 'token')
         credentials.Credentials.AppId = self.app_id
         credentials.Credentials.DevId = kwargs.get('dev_id') or ebaysuds_config.get('keys', 'dev_id')
         credentials.Credentials.AuthCert = kwargs.get('cert_id') or ebaysuds_config.get(self._key_section, 'cert_id')
+        credentials.eBayAuthToken = kwargs.get('token') or ebaysuds_config.get('auth', token_key)
         self.sudsclient.set_options(soapheaders=credentials)
     
     def __getattr__(self, name):

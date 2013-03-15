@@ -1,16 +1,23 @@
-[soap]
-# optional:
+# optional
+# --------
+# [soap]
 # trading_wsdl=XXXXX
 # shopping_wsdl=XXXXX
+#   (eg if you host a pruned wsdl)
+#
 # trading_api=https://api.sandbox.ebay.com/wsapi
 # shopping_api=http://open.api.ebay.com/shopping
-# etc
+#   (don't normally need to specify the endpoints)
 
+# app_id and site_id are required for all APIs
+# dev_id and cert_id are currently only required for the Trading API
 [keys]
 dev_id=XXXXX
+
 [sandbox_keys]
 app_id=XXXXX
 cert_id=XXXXX
+
 [production_keys]
 app_id=XXXXX
 cert_id=XXXXX
@@ -18,5 +25,7 @@ cert_id=XXXXX
 [site]
 site_id=0
 
+# only required for Trading API:
 [auth]
 token = XXXXX
+# sandbox_token = XXXXX

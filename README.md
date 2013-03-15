@@ -2,10 +2,10 @@
 
 Most of the Python libs for using eBay APIs I found are based on the _Plain XML_ API. Which basically means the author of the lib has to handcode request-builder functions for every method they intend to support.
 
-eBay have over _a hundred and fifty_ methods accessible via their APIs, each with some required and dozens of optional args. This basically means all the Python eBay libs are very incomplete and probably out of date too, because it's such a pain to maintain them.
+eBay have over _a hundred and fifty_ methods accessible in the Trading API alone, each with some required and dozens of optional args. This basically means all the Python eBay libs are very incomplete and probably out of date too, because it's such a pain to maintain them.
 
 ### SOAP
-eBay provide a _SOAP API_ too. The SOAP API is basically just the XML API with some additional verbose XML wrapping around it. But one advantage of the SOAP API is it has a _WSDL_… another XML file ([5.3MB currently](http://developer.ebay.com/webservices/latest/ebaySvc.wsdl)) that describes all the request methods and args and their types and responses.
+eBay provide a _SOAP API_ too. The SOAP API is basically just the XML API with some additional verbose XML wrapping around it. But one advantage of the SOAP API is it has a _WSDL_… another XML file ([5.3MB currently](http://developer.ebay.com/webservices/latest/ebaySvc.wsdl) for the Trading API) that describes all the request methods and args and their types and responses.
 
 Python already has an excellent SOAP lib in the form of [Suds](https://fedorahosted.org/suds/). So it seems like a better approach would be to use eBay's SOAP API via Suds...
 
@@ -15,23 +15,32 @@ Python already has an excellent SOAP lib in the form of [Suds](https://fedorahos
 ### Clean Again…
 So I made this thin wrapper around Suds, so that you can easily use *all* of the eBay API methods, in up-to-the-minute form, from Python.
 
+Currently three eBay APIs are supported: [Trading](https://www.x.com/developers/ebay/products/trading-api), [Shopping](https://www.x.com/developers/ebay/products/shopping-api) and [Finding](https://www.x.com/developers/ebay/products/finding-api).
+
 `pip install EbaySuds`
 
 ```python
-from ebaysuds import TradingAPI
-client = TradingAPI()
-client.GetItem(ItemID="321021906488")
+from ebaysuds import ShoppingAPI
+client = ShoppingAPI()
+client.GetSingleItem(ItemID="321021906488")
 ```
-
-You can see the source code itself is fairly trivial, but it took me a couple of days wrestling with eBay's extensive-but-crap docs to get to this point.
 
 ## Getting started
 
 1. First you need to get yourself some developer keys [from eBay here](https://developer.ebay.com/DevZone/account/)
-2. You need to make a `ebaysuds.conf` file in the root of your project (or `export EBAYSUDS_CONFIG_PATH=<path to conf>` in your shell)
+2. You need to make an `ebaysuds.conf` file in the root of your project (or `export EBAYSUDS_CONFIG_PATH=<path to conf>` in your shell)
 3. Easiest way is to copy `ebaysuds.conf-example` from this repo and fill in the blanks. `site_id` is the [code of the eBay site](http://developer.ebay.com/DevZone/XML/docs/WebHelp/FieldDifferences-Site_IDs.html) your profile is on.
 
-That's it. Well, you need to [read the docs](http://developer.ebay.com/DevZone/XML/docs/WebHelp/wwhelp/wwhimpl/js/html/wwhelp.htm?href=Overview-.html) from eBay to see how to make the calls you want.
+That's it. Well, you need to read the docs (eg [here's the Trading API](http://developer.ebay.com/DevZone/XML/docs/WebHelp/wwhelp/wwhimpl/js/html/wwhelp.htm?href=Overview-.html)) to see how to make the calls you want. The [suds docs](https://fedorahosted.org/suds/wiki/Documentation) can also be useful to understand how to pass certain args.
+
+All of the API classes take a `sandbox` kwarg. This is mostly only useful on the Trading API where your calls can have real effects!
+
+```python
+from ebaysuds import TradingAPI
+client = TradingAPI(sandbox=True)
+client.GetItem(ItemID="321021906488")
+```
+
 
 ### A spot of pruning
 
