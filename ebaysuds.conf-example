@@ -13,12 +13,6 @@
 # dev_id and cert_id are currently only required for the Trading API
 [keys]
 dev_id=XXXXX
-
-[sandbox_keys]
-app_id=XXXXX
-cert_id=XXXXX
-
-[production_keys]
 app_id=XXXXX
 cert_id=XXXXX
 
@@ -28,4 +22,3 @@ site_id=0
 # only required for Trading API:
 [auth]
 token = XXXXX
-# sandbox_token = XXXXX

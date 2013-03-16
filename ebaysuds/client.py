@@ -5,7 +5,7 @@ from functools import partial
 from suds.client import Client
 from suds.plugin import DocumentPlugin
 
-from .config import ebaysuds_config, CONFIG_PATH
+from .config import production_config, sandbox_config, CONFIG_PATH
 from .transport import WellBehavedHttpTransport
 
 
@@ -60,9 +60,14 @@ class APIBase(object):
         # lowercase (or all-caps) attributes we want...
 
         self.CONF_PREFIX = self._get_conf_prefix()
+        self.sandbox = sandbox
+        if sandbox:
+            self.config = sandbox_config
+        else:
+            self.config = production_config
 
         try:
-            self.WSDL = ebaysuds_config.get('soap', '%s_wsdl' % self.CONF_PREFIX)
+            self.WSDL = self.config.get('soap', '%s_wsdl' % self.CONF_PREFIX)
         except (NoOptionError, NoSectionError):
             if self.WSDL is None:
                 raise NotImplementedError(
@@ -71,7 +76,7 @@ class APIBase(object):
                 )
 
         try:
-            self._endpoint = ebaysuds_config.get('soap', '%s_api' % self.CONF_PREFIX)
+            self._endpoint = self.config.get('soap', '%s_api' % self.CONF_PREFIX)
         except (NoOptionError, NoSectionError):
             if sandbox:
                 if self.SANDBOX_ENDPOINT is None:
@@ -89,13 +94,10 @@ class APIBase(object):
                 self._endpoint = self.PRODUCTION_ENDPOINT
 
         self.sudsclient = Client(self.WSDL, cachingpolicy=1, transport=WellBehavedHttpTransport())
-        self.sandbox = sandbox
-
-        self._key_section = 'sandbox_keys' if sandbox else 'production_keys'
 
         log.info('CONFIG_PATH: %s', CONFIG_PATH)
-        self.site_id = kwargs.get('site_id') or ebaysuds_config.get('site', 'site_id')
-        self.app_id = kwargs.get('app_id') or ebaysuds_config.get(self._key_section, 'app_id')
+        self.site_id = kwargs.get('site_id') or self.config.get('site', 'site_id')
+        self.app_id = kwargs.get('app_id') or self.config.get('keys', 'app_id')
 
         # find current API version from the WSDL
         service = self.sudsclient.sd[0].service
@@ -126,14 +128,12 @@ class TradingAPI(APIBase):
             self.WSDL = wsdl_url
         super(TradingAPI, self).__init__(sandbox=sandbox, **kwargs)
 
-        token_key = '%stoken' % ('sandbox_' if sandbox else '')
-
         # do the authentication ritual
         credentials = self.sudsclient.factory.create('RequesterCredentials')
         credentials.Credentials.AppId = self.app_id
-        credentials.Credentials.DevId = kwargs.get('dev_id') or ebaysuds_config.get('keys', 'dev_id')
-        credentials.Credentials.AuthCert = kwargs.get('cert_id') or ebaysuds_config.get(self._key_section, 'cert_id')
-        credentials.eBayAuthToken = kwargs.get('token') or ebaysuds_config.get('auth', token_key)
+        credentials.Credentials.DevId = kwargs.get('dev_id') or self.config.get('keys', 'dev_id')
+        credentials.Credentials.AuthCert = kwargs.get('cert_id') or self.config.get('keys', 'cert_id')
+        credentials.eBayAuthToken = kwargs.get('token') or self.config.get('auth', 'token')
         self.sudsclient.set_options(soapheaders=credentials)
     
     def __getattr__(self, name):
@@ -181,9 +181,6 @@ class FindingAPI(APIBase):
 
     PRODUCTION_ENDPOINT = 'http://svcs.ebay.com/services/search/FindingService/v1'
     SANDBOX_ENDPOINT = 'http://svcs.sandbox.ebay.com/services/search/FindingService/v1'
-
-    def _get_call_args(self, name):
-        return 
 
     def __getattr__(self, name):
         method = super(FindingAPI, self).__getattr__(name=name)

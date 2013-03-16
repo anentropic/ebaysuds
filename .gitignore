@@ -38,4 +38,4 @@ MANIFEST
 .venv
 .DS_Store
 
-ebaysuds.conf
+ebaysuds.*conf
