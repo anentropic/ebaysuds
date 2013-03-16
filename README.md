@@ -30,10 +30,11 @@ client.GetSingleItem(ItemID="321021906488")
 1. First you need to get yourself some developer keys [from eBay here](https://developer.ebay.com/DevZone/account/)
 2. You need to make an `ebaysuds.conf` file in the root of your project (or `export EBAYSUDS_CONFIG_PATH=<path to conf>` in your shell)
 3. Easiest way is to copy `ebaysuds.conf-example` from this repo and fill in the blanks. `site_id` is the [code of the eBay site](http://developer.ebay.com/DevZone/XML/docs/WebHelp/FieldDifferences-Site_IDs.html) your profile is on.
+4. Make an `ebaysuds.sandbox.conf` file in the root of your project (or `export EBAYSUDS_SANDBOX_CONFIG_PATH=<path to conf>` in your shell) if you want to use the ebay api sandbox
 
 That's it. Well, you need to read the docs (eg [here's the Trading API](http://developer.ebay.com/DevZone/XML/docs/WebHelp/wwhelp/wwhimpl/js/html/wwhelp.htm?href=Overview-.html)) to see how to make the calls you want. The [suds docs](https://fedorahosted.org/suds/wiki/Documentation) can also be useful to understand how to pass certain args.
 
-All of the API classes take a `sandbox` kwarg. This is mostly only useful on the Trading API where your calls can have real effects!
+All of the API classes take a `sandbox` kwarg. This is mostly only useful on the Trading API where your calls can have real effects! This will cause ebaysuds to use your sandbox conf file and the eBay sandbox API endpoints.
 
 ```python
 from ebaysuds import TradingAPI
