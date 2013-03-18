@@ -55,7 +55,7 @@ class APIBase(object):
         # assume the class name ends in 'API'
         return self.__class__.__name__[:-3].lower()
 
-    def __init__(self, sandbox=False, **kwargs):
+    def __init__(self, wsdl_url=None, sandbox=False, **kwargs):
         # eBay API methods are all CamelCase so it should be safe to set any
         # lowercase (or all-caps) attributes we want...
 
@@ -66,14 +66,19 @@ class APIBase(object):
         else:
             self.config = production_config
 
-        try:
-            self.WSDL = self.config.get('soap', '%s_wsdl' % self.CONF_PREFIX)
-        except (NoOptionError, NoSectionError):
-            if self.WSDL is None:
-                raise NotImplementedError(
-                    'You must give a value for WSDL on a sub-class, or define'\
-                    ' <api name>_wsdl in the conf file'
-                )
+        # use passed in wsdl first, else try config file, else use class default
+        if wsdl_url is not None:
+            self._wsdl = wsdl_url
+        else
+            try:
+                self._wsdl = self.config.get('soap', '%s_wsdl' % self.CONF_PREFIX)
+            except (NoOptionError, NoSectionError):
+                if self.WSDL is None:
+                    raise NotImplementedError(
+                        'You must give a value for WSDL on a sub-class, or define'\
+                        ' <api name>_wsdl in the conf file'
+                    )
+                self._wsdl = self.WSDL
 
         try:
             self._endpoint = self.config.get('soap', '%s_api' % self.CONF_PREFIX)
@@ -93,7 +98,7 @@ class APIBase(object):
                     )
                 self._endpoint = self.PRODUCTION_ENDPOINT
 
-        self.sudsclient = Client(self.WSDL, cachingpolicy=1, transport=WellBehavedHttpTransport())
+        self.sudsclient = Client(self._wsdl, cachingpolicy=1, transport=WellBehavedHttpTransport())
 
         log.info('CONFIG_PATH: %s', CONFIG_PATH)
         self.site_id = kwargs.get('site_id') or self.config.get('site', 'site_id')
@@ -123,9 +128,6 @@ class TradingAPI(APIBase):
     SANDBOX_ENDPOINT = 'https://api.sandbox.ebay.com/wsapi'
 
     def __init__(self, wsdl_url=None, sandbox=False, **kwargs):
-        # allow to pass in a wsdl url, bypassing conf file etc
-        if wsdl_url is not None:
-            self.WSDL = wsdl_url
         super(TradingAPI, self).__init__(sandbox=sandbox, **kwargs)
 
         # do the authentication ritual
