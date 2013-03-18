@@ -128,7 +128,7 @@ class TradingAPI(APIBase):
     SANDBOX_ENDPOINT = 'https://api.sandbox.ebay.com/wsapi'
 
     def __init__(self, wsdl_url=None, sandbox=False, **kwargs):
-        super(TradingAPI, self).__init__(sandbox=sandbox, **kwargs)
+        super(TradingAPI, self).__init__(wsdl_url=wsdl_url, sandbox=sandbox, **kwargs)
 
         # do the authentication ritual
         credentials = self.sudsclient.factory.create('RequesterCredentials')
