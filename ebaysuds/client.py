@@ -69,7 +69,7 @@ class APIBase(object):
         # use passed in wsdl first, else try config file, else use class default
         if wsdl_url is not None:
             self._wsdl = wsdl_url
-        else
+        else:
             try:
                 self._wsdl = self.config.get('soap', '%s_wsdl' % self.CONF_PREFIX)
             except (NoOptionError, NoSectionError):
