@@ -15,7 +15,9 @@ Python already has an excellent SOAP lib in the form of [Suds](https://fedorahos
 ### Clean Again…
 So I made this thin wrapper around Suds, so that you can easily use *all* of the eBay API methods, in up-to-the-minute form, from Python.
 
-Currently three eBay APIs are supported: [Trading](https://www.x.com/developers/ebay/products/trading-api), [Shopping](https://www.x.com/developers/ebay/products/shopping-api) and [Finding](https://www.x.com/developers/ebay/products/finding-api).
+Currently four eBay APIs are supported: [Trading](https://www.x.com/developers/ebay/products/trading-api), [Shopping](https://www.x.com/developers/ebay/products/shopping-api), [Finding](https://www.x.com/developers/ebay/products/finding-api) and [Business Policies](http://developer.ebay.com/Devzone/business-policies/Concepts/BusinessPoliciesAPIGuide.html).
+
+I will add more APIs as I need them persoanlly. It's also quite easy to make your own by subclassing `APIBase` and following the existings examples in `ebaysuds.client`.
 
 `pip install EbaySuds`
 
