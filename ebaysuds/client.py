@@ -106,11 +106,15 @@ class APIBase(object):
 
         # find current API version from the WSDL
         service = self.sudsclient.sd[0].service
-        self.version = service.root.getChild('documentation').getChild('Version').text
+        try:
+            self.version = service.root.getChild('documentation').getChild('Version').text
+        except AttributeError:
+            # brilliantly, not all eBay APIs have consistent capitalisation...
+            self.version = service.root.getChild('documentation').getChild('version').text
 
         # later we add a querystring to the service URI specified in WSDL
         # (the service URI can be found in service.ports[0].location but there's no sandbox
-        # wsdl, so we can't endpoint in the wsdl)  
+        # wsdl, so we can't use endpoint given in the wsdl)  
 
     def __getattr__(self, name):
         """
@@ -195,6 +199,32 @@ class FindingAPI(APIBase):
             'X-EBAY-SOA-SECURITY-APPNAME': self.app_id,
             'X-EBAY-SOA-REQUEST-DATA-FORMAT': 'SOAP',
             'X-EBAY-SOA-MESSAGE-PROTOCOL': 'SOAP12',
+        }
+        self.sudsclient.set_options(headers=http_headers)
+        return method
+
+
+class BusinessPoliciesAPI(APIBase):
+    WSDL = 'http://developer.ebay.com/webservices/business-policies/latest/SellerProfilesManagementService.wsdl'
+
+    PRODUCTION_ENDPOINT = 'https://svcs.ebay.com/services/selling/v1/SellerProfilesManagementService'
+    SANDBOX_ENDPOINT = 'http://svcs.sandbox.ebay.com/services/selling/v1/SellerProfilesManagementService'
+
+    def __init__(self, wsdl_url=None, sandbox=False, **kwargs):
+        super(BusinessPoliciesAPI, self).__init__(wsdl_url=wsdl_url, sandbox=sandbox, **kwargs)
+        self._token = kwargs.get('token') or self.config.get('auth', 'token')
+
+    def __getattr__(self, name):
+        method = super(BusinessPoliciesAPI, self).__getattr__(name=name)
+
+        http_headers = {
+            'X-EBAY-SOA-OPERATION-NAME': name,
+#            'X-EBAY-SOA-SERVICE-NAME': 'SellerProfilesManagementService',# not required
+            'X-EBAY-SOA-SERVICE-VERSION': self.version,
+            'X-EBAY-SOA-GLOBAL-ID': SITE_ID_TO_GLOBAL_ID[int(self.site_id,10)],
+            'X-EBAY-SOA-REQUEST-DATA-FORMAT': 'SOAP',
+            'X-EBAY-SOA-MESSAGE-PROTOCOL': 'SOAP12',
+            'X-EBAY-SOA-SECURITY-TOKEN':  self._token,
         }
         self.sudsclient.set_options(headers=http_headers)
         return method
