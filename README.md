@@ -17,7 +17,7 @@ So I made this thin wrapper around Suds, so that you can easily use *all* of the
 
 Currently four eBay APIs are supported: [Trading](https://www.x.com/developers/ebay/products/trading-api), [Shopping](https://www.x.com/developers/ebay/products/shopping-api), [Finding](https://www.x.com/developers/ebay/products/finding-api) and [Business Policies](http://developer.ebay.com/Devzone/business-policies/Concepts/BusinessPoliciesAPIGuide.html).
 
-I will add more APIs as I need them personally. It's also quite easy to make your own by subclassing `APIBase` and following the existings examples in `ebaysuds.client`.
+I will add more APIs as I need them personally. It's also quite easy to make your own by subclassing `APIBase` and following the existing examples in `ebaysuds.client`.
 
 `pip install EbaySuds`
 
