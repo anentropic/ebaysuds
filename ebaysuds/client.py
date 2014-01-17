@@ -1,9 +1,9 @@
 import logging
+from abc import ABCMeta
 from ConfigParser import NoOptionError, NoSectionError
 from functools import partial
 
 from suds.client import Client
-from suds.plugin import DocumentPlugin
 
 from .config import production_config, sandbox_config, CONFIG_PATH
 from .transport import WellBehavedHttpTransport
@@ -12,7 +12,7 @@ from .transport import WellBehavedHttpTransport
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-# I wish I didn't have to do this,, see:
+# I wish I didn't have to hard-code this but there's no service to query, see:
 # http://developer.ebay.com/DevZone/merchandising/docs/Concepts/SiteIDToGlobalID.html
 SITE_ID_TO_GLOBAL_ID = {
     0: 'EBAY-US',
@@ -39,13 +39,18 @@ SITE_ID_TO_GLOBAL_ID = {
     216: 'EBAY-SG',
 }
 
-def make_querystring(**kwargs):
-    return "?%s" % "&".join(["%s=%s" % (k,v) for k,v in kwargs.items()])
 
-class APIBase(object):
+def make_querystring(**kwargs):
+    # this will be urlencoded later by suds
+    return "?%s" % "&".join(["%s=%s" % (k, v) for k, v in kwargs.items()])
+
+
+class APIBase:
     """
-    AbstractBaseClass: don't instantiate this, use a concrete sub-class
+    Abstract: make a concrete sub-class (some APIs are provided below)
     """
+    __metaclass__ = ABCMeta
+
     WSDL = None
 
     PRODUCTION_ENDPOINT = None
@@ -56,8 +61,8 @@ class APIBase(object):
         return self.__class__.__name__[:-3].lower()
 
     def __init__(self, wsdl_url=None, sandbox=False, **kwargs):
-        # eBay API methods are all CamelCase so it should be safe to set any
-        # lowercase (or all-caps) attributes we want...
+        # eBay API methods are all CamelCase so it should be safe to set
+        # lowercase (or all-caps) attributes on self (see __getattr__)
 
         self.CONF_PREFIX = self._get_conf_prefix()
         self.sandbox = sandbox
@@ -75,25 +80,29 @@ class APIBase(object):
             except (NoOptionError, NoSectionError):
                 if self.WSDL is None:
                     raise NotImplementedError(
-                        'You must give a value for WSDL on a sub-class, or define'\
+                        'You must give a value for WSDL on a sub-class, or define'
                         ' <api name>_wsdl in the conf file'
                     )
                 self._wsdl = self.WSDL
 
+        # determine the service endpoint URI
+        # (the service URI can be found in sudsclient.service.ports[0].location,
+        # i.e. from the wsdl, but since there's no sandbox-specific wsdl we
+        # should have another way to get the endpoint that doesn't rely on wsdl)
         try:
             self._endpoint = self.config.get('soap', '%s_api' % self.CONF_PREFIX)
         except (NoOptionError, NoSectionError):
             if sandbox:
                 if self.SANDBOX_ENDPOINT is None:
                     raise NotImplementedError(
-                        'You must give a value for SANDBOX_ENDPOINT on a sub-'\
+                        'You must give a value for SANDBOX_ENDPOINT on a sub-'
                         'class, or define <api name>_api in the conf file'
                     )
                 self._endpoint = self.SANDBOX_ENDPOINT
             else:
                 if self.SANDBOX_ENDPOINT is None:
                     raise NotImplementedError(
-                        'You must give a value for PRODUCTION_ENDPOINT on a '\
+                        'You must give a value for PRODUCTION_ENDPOINT on a '
                         'sub-class, or define <api name>_api in the conf file'
                     )
                 self._endpoint = self.PRODUCTION_ENDPOINT
@@ -112,13 +121,9 @@ class APIBase(object):
             # brilliantly, not all eBay APIs have consistent capitalisation...
             self.version = service.root.getChild('documentation').getChild('version').text
 
-        # later we add a querystring to the service URI specified in WSDL
-        # (the service URI can be found in service.ports[0].location but there's no sandbox
-        # wsdl, so we can't use endpoint given in the wsdl)  
-
     def __getattr__(self, name):
         """
-        A wrapper over the the suds service method invocation makes interface
+        A wrapper over the the suds service method invocation: makes interface
         nicer and gives the opportunity to do the extra stuff required by
         ebay's weird implementations of SOAP
         """
@@ -139,9 +144,9 @@ class TradingAPI(APIBase):
         credentials.Credentials.AppId = self.app_id
         credentials.Credentials.DevId = kwargs.get('dev_id') or self.config.get('keys', 'dev_id')
         credentials.Credentials.AuthCert = kwargs.get('cert_id') or self.config.get('keys', 'cert_id')
-        credentials.eBayAuthToken = kwargs.get('token') or self.config.get('auth', 'token')
+        credentials.eBayAuthToken = self._token = kwargs.get('token') or self.config.get('auth', 'token')
         self.sudsclient.set_options(soapheaders=credentials)
-    
+
     def __getattr__(self, name):
         method = super(TradingAPI, self).__getattr__(name=name)
 
@@ -193,9 +198,9 @@ class FindingAPI(APIBase):
 
         http_headers = {
             'X-EBAY-SOA-OPERATION-NAME': name,
-            'X-EBAY-SOA-SERVICE-NAME': 'FindingService',# this one is just genius
+            'X-EBAY-SOA-SERVICE-NAME': 'FindingService',  # this one is just genius
             'X-EBAY-SOA-SERVICE-VERSION': self.version,
-            'X-EBAY-SOA-GLOBAL-ID': SITE_ID_TO_GLOBAL_ID[int(self.site_id,10)],
+            'X-EBAY-SOA-GLOBAL-ID': SITE_ID_TO_GLOBAL_ID[int(self.site_id, 10)],
             'X-EBAY-SOA-SECURITY-APPNAME': self.app_id,
             'X-EBAY-SOA-REQUEST-DATA-FORMAT': 'SOAP',
             'X-EBAY-SOA-MESSAGE-PROTOCOL': 'SOAP12',
@@ -219,12 +224,12 @@ class BusinessPoliciesAPI(APIBase):
 
         http_headers = {
             'X-EBAY-SOA-OPERATION-NAME': name,
-#            'X-EBAY-SOA-SERVICE-NAME': 'SellerProfilesManagementService',# not required
+            #'X-EBAY-SOA-SERVICE-NAME': 'SellerProfilesManagementService',# not required
             'X-EBAY-SOA-SERVICE-VERSION': self.version,
-            'X-EBAY-SOA-GLOBAL-ID': SITE_ID_TO_GLOBAL_ID[int(self.site_id,10)],
+            'X-EBAY-SOA-GLOBAL-ID': SITE_ID_TO_GLOBAL_ID[int(self.site_id, 10)],
             'X-EBAY-SOA-REQUEST-DATA-FORMAT': 'SOAP',
             'X-EBAY-SOA-MESSAGE-PROTOCOL': 'SOAP12',
-            'X-EBAY-SOA-SECURITY-TOKEN':  self._token,
+            'X-EBAY-SOA-SECURITY-TOKEN': self._token,
         }
         self.sudsclient.set_options(headers=http_headers)
         return method
