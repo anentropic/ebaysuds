@@ -10,6 +10,6 @@ setup(
     author_email="ego@anentropic.com",
     url="https://github.com/anentropic/ebaysuds",
     install_requires=[
-        "suds == 0.4",
+        "suds == 1.0.0",
     ],
 )
